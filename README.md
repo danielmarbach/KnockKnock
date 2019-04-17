@@ -4,7 +4,7 @@ Traditionally we look at time-based business rules like invoice reminders or mak
 
 In this talk, I show you how to leverage durable timeouts with messaging and the saga pattern to become the TimeLord in your business domains. You can finally get rid of your batch jobs. To satisfy the Doc Brown in all of us we'll dive into mad scientist implementations of durable timeouts in RabbitMQ and AmazonSQS. Knock. Knock. When's there?
 
-Please read the [LICENSE.md](License) agreement
+Please read the [LICENSE](License) agreement
 
 The font used in the slides is
 
