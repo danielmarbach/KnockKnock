@@ -15,15 +15,19 @@ namespace Orders.Backend
             return Ok();
         }
 
+        [HttpPut("/concurrency")]
+        public IActionResult Put([FromQuery] bool enable)
+        {
+            Database.IncreaseChanceForConcurrencyException(enable);
+            return Ok();
+        }
+
         [HttpPost]
         public IActionResult Post([FromBody] Order order)
         {
             var currentRunningTotal = Database.GetRunningTotal(order.CustomerId);
-
             var currentOrderTotal = order.Total;
-
             currentRunningTotal.Total += currentOrderTotal;
-
             Database.Save(currentRunningTotal);
 
             var discount = 0m;
@@ -33,7 +37,6 @@ namespace Orders.Backend
             }
 
             order.Total -= order.Total * discount;
-
             Database.Save(order);
 
             BackgroundJob.Schedule(() => DecreaseRunningTotal(order.CustomerId, currentOrderTotal), Schedule.InAWeek);
@@ -47,16 +50,14 @@ namespace Orders.Backend
             try
             {
                 var currentRunningTotal = Database.GetRunningTotal(orderCustomerId);
-
                 currentRunningTotal.Total -= amountToDecrease;
-
                 Database.Save(currentRunningTotal);
 
-                Console.WriteLine($"Decreased running total of {orderCustomerId} by {amountToDecrease}");
+                Console.WriteLine($"Decreased running total of {orderCustomerId.Short()} by {amountToDecrease}");
             }
             catch (DBConcurrencyException)
             {
-                Console.WriteLine($"Failed to decrease running total of {orderCustomerId} by {amountToDecrease}");
+                Console.WriteLine($"Failed to decrease running total of {orderCustomerId.Short()} by {amountToDecrease}");
                 throw;
             }
         }

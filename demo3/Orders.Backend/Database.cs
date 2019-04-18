@@ -11,6 +11,19 @@ namespace Orders.Backend
         static readonly ConcurrentDictionary<Guid, ConcurrentBag<Order>> ordersPerCustomer = new ConcurrentDictionary<Guid, ConcurrentBag<Order>>();
         static readonly ConcurrentDictionary<Guid, RunningTotalPerCustomer> runningTotalPerCustomers = new ConcurrentDictionary<Guid, RunningTotalPerCustomer>();
         private static long runningTotalVersion;
+        static Action delayAction = () => { };
+
+        public static void IncreaseChanceForConcurrencyException(bool enable)
+        {
+            if (enable)
+            {
+                delayAction = () => Thread.Sleep(random.Next(0, 500));
+            }
+            else
+            {
+                delayAction = () => { };
+            }
+        }
 
         public static RunningTotalPerCustomer GetRunningTotal(Guid customerId)
         {
@@ -31,7 +44,8 @@ namespace Orders.Backend
 
         public static void Save(RunningTotalPerCustomer total)
         {
-            Thread.Sleep(random.Next(0, 500));
+            delayAction();
+
             runningTotalPerCustomers.AddOrUpdate(total.CustomerId, total, (id, current) =>
             {
                 if (current.Version != total.Version)

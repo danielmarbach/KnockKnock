@@ -23,7 +23,6 @@ namespace Orders.Frontend
                 }
                 catch (HttpRequestException)
                 {
-                    Console.Write("!");
                 }
             } while (!success);
 

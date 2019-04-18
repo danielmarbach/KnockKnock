@@ -16,7 +16,11 @@ namespace Orders.Frontend
             var services = new ServiceCollection();
             services.AddHttpClient("backend",
                 client => { client.BaseAddress = new Uri("http://orders.backend.future:8080/"); })
-                .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(1)));
+                .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(5, i =>
+                {
+                    Console.WriteLine($"Client side retry #{i}");
+                    return TimeSpan.FromSeconds(1);
+                }));
 
             services.AddHttpClient("backend-health",
                     client => { client.BaseAddress = new Uri("http://orders.backend.future:8080/"); })
@@ -48,13 +52,19 @@ namespace Orders.Frontend
             Console.WriteLine("Concurrency");
             Console.WriteLine();
 
+            await httpClient.PutAsync("/concurrency?enable=true", new StringContent(string.Empty));
+
             await Task.WhenAll(
                 NewOrder(customerId, httpClient),
                 NewOrder(customerId, httpClient),
                 NewOrder(customerId, httpClient),
                 NewOrder(customerId, httpClient),
                 NewOrder(customerId, httpClient),
+                NewOrder(customerId, httpClient),
+                NewOrder(customerId, httpClient),
                 NewOrder(customerId, httpClient));
+
+            await httpClient.PutAsync("/concurrency?enable=false", new StringContent(string.Empty));
 
             Console.WriteLine();
         }
