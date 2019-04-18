@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -43,7 +44,7 @@ namespace Orders.Frontend
 
         private static async Task NewOrder(Guid customerId, HttpClient httpClient)
         {
-            orderNumber++;
+            var currentOrderNumber = Interlocked.Increment(ref orderNumber);
 
             var order = new Order
             {
@@ -52,12 +53,12 @@ namespace Orders.Frontend
             };
 
             var id = order.CustomerId.ToString();
-            Console.WriteLine($"Order #{orderNumber}: Value {order.Total} for customer {id.Substring(id.Length -7, 7)}");
+            Console.WriteLine($"Order #{currentOrderNumber}: Value {order.Total} for customer {id.Substring(id.Length -7, 7)}");
             var orderResponse = await httpClient.PostAsync("api/orders",
                 new StringContent(JsonConvert.SerializeObject(order), Encoding.UTF8, "application/json"));
             orderResponse.EnsureSuccessStatusCode();
             var returnedOrder = JsonConvert.DeserializeObject<Order>(await orderResponse.Content.ReadAsStringAsync());
-            Console.WriteLine(returnedOrder.Total == order.Total ? $"Order #{orderNumber}: No discount" : $"Order #{orderNumber}: Got a discount of {order.Total - returnedOrder.Total}");
+            Console.WriteLine(returnedOrder.Total == order.Total ? $"Order #{currentOrderNumber}: No discount" : $"Order #{currentOrderNumber}: Got a discount of {order.Total - returnedOrder.Total}");
         }
     }
 }
