@@ -1,0 +1,63 @@
+﻿using System;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+
+namespace Orders.Frontend
+{
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            var httpClient = new HttpClient {BaseAddress = new Uri("http://orders.backend:8080/") };
+
+            bool success = false;
+            do
+            {
+                try
+                {
+                    var response = await httpClient.GetAsync("api/orders");
+                    success = response.IsSuccessStatusCode;
+                }
+                catch (HttpRequestException)
+                {
+                    Console.Write("!");
+                }
+            } while (!success);
+
+            Console.WriteLine("Ready");
+            Console.WriteLine();
+
+            var customerId = Guid.NewGuid();
+
+            await Task.WhenAll(
+                NewOrder(customerId, httpClient), 
+                NewOrder(customerId, httpClient), 
+                NewOrder(customerId, httpClient));
+
+            Console.WriteLine();
+        }
+
+        private static int orderNumber;
+
+        private static async Task NewOrder(Guid customerId, HttpClient httpClient)
+        {
+            orderNumber++;
+
+            var order = new Order
+            {
+                CustomerId = customerId,
+                Total = 300,
+            };
+
+            var id = order.CustomerId.ToString();
+            Console.WriteLine($"Order #{orderNumber}: Value {order.Total} for customer {id.Substring(id.Length -7, 7)}");
+            var orderResponse = await httpClient.PostAsync("api/orders",
+                new StringContent(JsonConvert.SerializeObject(order), Encoding.UTF8, "application/json"));
+            orderResponse.EnsureSuccessStatusCode();
+            var returnedOrder = JsonConvert.DeserializeObject<Order>(await orderResponse.Content.ReadAsStringAsync());
+            Console.WriteLine(returnedOrder.Total == order.Total ? $"Order #{orderNumber}: No discount" : $"Order #{orderNumber}: Got a discount of {order.Total - returnedOrder.Total}");
+        }
+    }
+}
