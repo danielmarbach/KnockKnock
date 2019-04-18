@@ -1,0 +1,21 @@
+version: '3.4'
+
+services:
+  orders.backend.future:
+    image: ${DOCKER_REGISTRY-}ordersbackendfuture
+    build:
+      context: .
+      dockerfile: Orders.Backend/Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=PRODUCTION
+    ports:
+      - "8080:8080"
+
+  orders.frontend.future:
+    image: ${DOCKER_REGISTRY-}ordersfrontendfuture
+    build:
+      context: .
+      dockerfile: Orders.Frontend/Dockerfile
+    depends_on:
+      - "orders.backend.future"
