@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Contracts;
 using NServiceBus;
 
@@ -28,6 +29,7 @@ namespace Orders.Backend
         public Task Timeout(SubmitOrder state, IMessageHandlerContext context)
         {
             Data.RunningTotal -= state.Total;
+            Console.WriteLine($"Decreased running total of {state.CustomerId.Short()} by {state.Total}");
             return Task.CompletedTask;
         }
 
