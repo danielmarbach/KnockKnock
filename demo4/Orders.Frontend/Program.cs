@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Net.Http;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Contracts;
 using NServiceBus;
 
 namespace Orders.Frontend
@@ -40,6 +38,8 @@ namespace Orders.Frontend
             var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             transport.ConnectionString("host=rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
             transport.UseConventionalRoutingTopology();
+            var routing = transport.Routing();
+            routing.RouteToEndpoint(typeof(SubmitOrder), "Orders.Backend");
 
             var endpoint = await Endpoint.Start(endpointConfiguration);
 
@@ -81,8 +81,9 @@ namespace Orders.Frontend
         {
             var currentOrderNumber = Interlocked.Increment(ref orderNumber);
 
-            var order = new Order
+            var order = new SubmitOrder
             {
+                OrderNumber = currentOrderNumber,
                 CustomerId = customerId,
                 Total = 300,
             };
@@ -90,11 +91,7 @@ namespace Orders.Frontend
             var id = order.CustomerId.ToString();
             Console.WriteLine($"Order #{currentOrderNumber}: Value {order.Total} for customer {id.Substring(id.Length -7, 7)}");
 
-            await Task.Yield();
-            // todo
-
-            //var returnedOrder = JsonConvert.DeserializeObject<Order>(await orderResponse.Content.ReadAsStringAsync());
-            //Console.WriteLine(returnedOrder.Total == order.Total ? $"Order #{currentOrderNumber}: No discount" : $"Order #{currentOrderNumber}: Got a discount of {order.Total - returnedOrder.Total}");
+            await messageSession.Send(order);
         }
     }
 }
