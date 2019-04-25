@@ -24,7 +24,6 @@ namespace Orders.Frontend
                 }
                 catch (Exception)
                 {
-                    Console.Write("!");
                     await Task.Delay(2000);
                 }
             } while (!success);

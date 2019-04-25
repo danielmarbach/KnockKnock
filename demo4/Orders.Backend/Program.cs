@@ -26,7 +26,6 @@ namespace Orders.Backend
                 }
                 catch (Exception)
                 {
-                    Console.Write("!");
                     await Task.Delay(2000, tokenSource.Token);
                 }
             } while (!success);
