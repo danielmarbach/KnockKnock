@@ -40,7 +40,6 @@ namespace Orders.Backend
             endpointConfiguration.SendFailedMessagesTo("error");
             endpointConfiguration.AuditProcessedMessagesTo("audit");
             endpointConfiguration.UsePersistence<LearningPersistence>();
-            endpointConfiguration.LimitMessageProcessingConcurrencyTo(10);
 
             var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             transport.ConnectionString("host=rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
