@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Contracts;
 using NServiceBus;
+using NServiceBus.Logging;
 
 namespace Orders.Frontend
 {
@@ -27,6 +28,9 @@ namespace Orders.Frontend
                     await Task.Delay(2000);
                 }
             } while (!success);
+
+            var defaultFactory = LogManager.Use<DefaultFactory>();
+            defaultFactory.Level(LogLevel.Fatal);
 
             var endpointConfiguration = new EndpointConfiguration("Orders.Frontend");
             endpointConfiguration.EnableInstallers();

@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using NServiceBus;
+using NServiceBus.Logging;
 
 namespace Orders.Backend
 {
@@ -30,12 +31,16 @@ namespace Orders.Backend
                 }
             } while (!success);
 
+            var defaultFactory = LogManager.Use<DefaultFactory>();
+            defaultFactory.Level(LogLevel.Info);
+
             var endpointConfiguration = new EndpointConfiguration("Orders.Backend");
             endpointConfiguration.EnableInstallers();
             endpointConfiguration.UseSerialization<NewtonsoftSerializer>();
             endpointConfiguration.SendFailedMessagesTo("error");
             endpointConfiguration.AuditProcessedMessagesTo("audit");
             endpointConfiguration.UsePersistence<LearningPersistence>();
+            endpointConfiguration.LimitMessageProcessingConcurrencyTo(10);
 
             var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             transport.ConnectionString("host=rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
