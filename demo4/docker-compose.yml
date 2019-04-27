@@ -1,9 +1,9 @@
 version: '3.4'
 
 services:
-  rabbitmq.nsb:
+  orders.rabbitmq.nsb:
     image: "rabbitmq:3-management-alpine"
-    hostname: "rabbitmq.nsb"
+    hostname: "orders.rabbitmq.nsb"
     environment:
       RABBITMQ_DEFAULT_USER: "rabbitmq.nsb"
       RABBITMQ_DEFAULT_PASS: "rabbitmq.nsb"
@@ -22,7 +22,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - "rabbitmq.nsb"
+      - "orders.rabbitmq.nsb"
 
   orders.frontend.nsb:
     image: ${DOCKER_REGISTRY-}ordersfrontendnsb
@@ -30,4 +30,4 @@ services:
       context: .
       dockerfile: Orders.Frontend/Dockerfile
     depends_on:
-      - "rabbitmq.nsb"
+      - "orders.rabbitmq.nsb"

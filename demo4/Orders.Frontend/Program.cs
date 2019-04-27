@@ -19,7 +19,7 @@ namespace Orders.Frontend
                 {
                     using (var tcpClientB = new TcpClient())
                     {
-                        await tcpClientB.ConnectAsync("rabbitmq.nsb", 5672);
+                        await tcpClientB.ConnectAsync("orders.rabbitmq.nsb", 5672);
                         success = true;
                     }
                 }
@@ -37,9 +37,10 @@ namespace Orders.Frontend
             endpointConfiguration.UseSerialization<NewtonsoftSerializer>();
             endpointConfiguration.SendFailedMessagesTo("error");
             endpointConfiguration.AuditProcessedMessagesTo("audit");
+            endpointConfiguration.SendOnly();
 
             var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
-            transport.ConnectionString("host=rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
+            transport.ConnectionString("host=orders.rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
             transport.UseConventionalRoutingTopology();
             var routing = transport.Routing();
             routing.RouteToEndpoint(typeof(SubmitOrder), "Orders.Backend");

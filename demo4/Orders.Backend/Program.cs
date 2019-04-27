@@ -21,7 +21,7 @@ namespace Orders.Backend
                 {
                     using (var tcpClientB = new TcpClient())
                     {
-                        await tcpClientB.ConnectAsync("rabbitmq.nsb", 5672);
+                        await tcpClientB.ConnectAsync("orders.rabbitmq.nsb", 5672);
                         success = true;
                     }
                 }
@@ -42,7 +42,7 @@ namespace Orders.Backend
             endpointConfiguration.UsePersistence<LearningPersistence>();
 
             var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
-            transport.ConnectionString("host=rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
+            transport.ConnectionString("host=orders.rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
             transport.UseConventionalRoutingTopology();
 
             var endpoint = await Endpoint.Start(endpointConfiguration);
