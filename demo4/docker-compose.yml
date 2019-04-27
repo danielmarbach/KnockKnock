@@ -13,6 +13,9 @@ services:
       - "5672:5672"
     volumes:
       - ./rabbitmq-logging.conf:/etc/rabbitmq/advanced.config
+    logging:
+        driver: none       
+
   orders.backend.db.nsb:
     image: "mcr.microsoft.com/mssql/server"
     environment:
