@@ -18,7 +18,7 @@ namespace Orders.Frontend
                 client => { client.BaseAddress = new Uri("http://orders.backend.future:8080/"); })
                 .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(5, i =>
                 {
-                    Console.WriteLine($"Client side retry #{i}");
+                    Console.WriteLine($"--> Client side retry #{i}");
                     return TimeSpan.FromSeconds(1);
                 }));
 

@@ -34,13 +34,15 @@ namespace Orders.Backend
             } while (!success);
 
             var defaultFactory = LogManager.Use<DefaultFactory>();
-            defaultFactory.Level(LogLevel.Info);
+            defaultFactory.Level(LogLevel.Error);
 
             var endpointConfiguration = new EndpointConfiguration("Orders.Backend");
             endpointConfiguration.EnableInstallers();
             endpointConfiguration.UseSerialization<NewtonsoftSerializer>();
             endpointConfiguration.SendFailedMessagesTo("error");
             endpointConfiguration.AuditProcessedMessagesTo("audit");
+            endpointConfiguration.Pipeline.Register(new CustomBehavior(), "Logs meaningful stuff");
+
             var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
             persistence.SqlDialect<SqlDialect.MsSqlServer>();
             persistence.ConnectionBuilder(

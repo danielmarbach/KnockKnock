@@ -57,7 +57,7 @@ namespace Orders.Backend
             }
             catch (DBConcurrencyException)
             {
-                Console.WriteLine($"Failed to decrease running total of {orderCustomerId.Short()} by {amountToDecrease}");
+                Console.WriteLine($"--> Failed to decrease running total of {orderCustomerId.Short()} by {amountToDecrease}");
                 throw;
             }
         }
