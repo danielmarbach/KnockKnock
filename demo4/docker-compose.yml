@@ -13,6 +13,15 @@ services:
       - "5672:5672"
     volumes:
       - ./rabbitmq-logging.conf:/etc/rabbitmq/advanced.config
+  orders.backend.db.nsb:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+        SA_PASSWORD: "Your_password123"
+        ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    logging:
+        driver: none  
 
   orders.backend.nsb:
     image: ${DOCKER_REGISTRY-}ordersbackendnsb
@@ -23,6 +32,7 @@ services:
       - "8080:8080"
     depends_on:
       - "orders.rabbitmq.nsb"
+      - "orders.backend.db.nsb"
 
   orders.frontend.nsb:
     image: ${DOCKER_REGISTRY-}ordersfrontendnsb
@@ -31,3 +41,4 @@ services:
       dockerfile: Orders.Frontend/Dockerfile
     depends_on:
       - "orders.rabbitmq.nsb"
+      - "orders.backend.db.nsb"

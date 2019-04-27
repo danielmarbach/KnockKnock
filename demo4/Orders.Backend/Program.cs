@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.Logging;
+using NServiceBus.Persistence.Sql;
 
 namespace Orders.Backend
 {
@@ -39,7 +41,13 @@ namespace Orders.Backend
             endpointConfiguration.UseSerialization<NewtonsoftSerializer>();
             endpointConfiguration.SendFailedMessagesTo("error");
             endpointConfiguration.AuditProcessedMessagesTo("audit");
-            endpointConfiguration.UsePersistence<LearningPersistence>();
+            var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
+            persistence.SqlDialect<SqlDialect.MsSqlServer>();
+            persistence.ConnectionBuilder(
+                connectionBuilder: () =>
+                {
+                    return new SqlConnection(@"Server=orders.backend.db.nsb;Initial Catalog=master;User Id=sa;Password=Your_password123;");
+                });
 
             var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             transport.ConnectionString("host=orders.rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
