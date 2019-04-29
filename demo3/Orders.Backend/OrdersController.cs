@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using Hangfire;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Orders.Backend
@@ -9,6 +10,13 @@ namespace Orders.Backend
     [ApiController]
     public class OrdersController : ControllerBase
     {
+        private readonly IApplicationLifetime applicationLifetime;
+
+        public OrdersController(IApplicationLifetime applicationLifetime)
+        {
+            this.applicationLifetime = applicationLifetime;
+        }
+
         [HttpGet]
         public IActionResult Get()
         {
@@ -19,6 +27,13 @@ namespace Orders.Backend
         public IActionResult Put([FromQuery] bool enable)
         {
             Database.IncreaseChanceForConcurrencyException(enable);
+            return Ok();
+        }
+
+        [HttpDelete]
+        public IActionResult Delete()
+        {
+            applicationLifetime.StopApplication();
             return Ok();
         }
 
