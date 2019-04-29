@@ -12,43 +12,8 @@ namespace Orders.Frontend
     {
         static async Task Main(string[] args)
         {
-            bool success = false;
-            do
-            {
-                try
-                {
-                    using (var tcpClientB = new TcpClient())
-                    {
-                        await tcpClientB.ConnectAsync("orders.rabbitmq.nsb", 5672);
-                        success = true;
-                    }
-                }
-                catch (Exception)
-                {
-                    await Task.Delay(2000);
-                }
-            } while (!success);
-
-            var defaultFactory = LogManager.Use<DefaultFactory>();
-            defaultFactory.Level(LogLevel.Fatal);
-
-            var endpointConfiguration = new EndpointConfiguration("Orders.Frontend");
-            endpointConfiguration.EnableInstallers();
-            endpointConfiguration.UseSerialization<NewtonsoftSerializer>();
-            endpointConfiguration.SendFailedMessagesTo("error");
-            endpointConfiguration.AuditProcessedMessagesTo("audit");
-            endpointConfiguration.SendOnly();
-
-            var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
-            transport.ConnectionString("host=orders.rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
-            transport.UseConventionalRoutingTopology();
-            var routing = transport.Routing();
-            routing.RouteToEndpoint(typeof(SubmitOrder), "Orders.Backend");
-
-            var endpoint = await Endpoint.Start(endpointConfiguration);
-
-            Console.WriteLine("Ready");
-            Console.WriteLine();
+            await WaitUntilRabbitMQReady();
+            var endpoint = await CreateEndpointInstance();
 
             var customerId = Guid.NewGuid();
 
@@ -74,12 +39,8 @@ namespace Orders.Frontend
                 NewOrder(customerId, endpoint),
                 NewOrder(customerId, endpoint));
 
-            Console.WriteLine();
-
             await endpoint.Stop();
         }
-
-        private static int orderNumber;
 
         private static async Task NewOrder(Guid customerId, IMessageSession messageSession)
         {
@@ -92,10 +53,56 @@ namespace Orders.Frontend
                 Total = 300,
             };
 
-            var id = order.CustomerId.ToString();
-            Console.WriteLine($"Order #{currentOrderNumber}: Value {order.Total} for customer {id.Substring(id.Length -7, 7)}");
+            Console.WriteLine($"Order #{currentOrderNumber}: Value {order.Total} for customer {order.CustomerId.Short()}");
 
             await messageSession.Send(order);
         }
+
+        private static async Task<IEndpointInstance> CreateEndpointInstance()
+        {
+            var defaultFactory = LogManager.Use<DefaultFactory>();
+            defaultFactory.Level(LogLevel.Fatal);
+
+            var endpointConfiguration = new EndpointConfiguration("Orders.Frontend");
+            endpointConfiguration.EnableInstallers();
+            endpointConfiguration.UseSerialization<NewtonsoftSerializer>();
+            endpointConfiguration.SendFailedMessagesTo("error");
+            endpointConfiguration.AuditProcessedMessagesTo("audit");
+            endpointConfiguration.SendOnly();
+
+            var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
+            transport.ConnectionString("host=orders.rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
+            transport.UseConventionalRoutingTopology();
+            var routing = transport.Routing();
+            routing.RouteToEndpoint(typeof(SubmitOrder), "Orders.Backend");
+
+            var endpoint = await Endpoint.Start(endpointConfiguration);
+
+            Console.WriteLine("Ready");
+            Console.WriteLine();
+            return endpoint;
+        }
+
+        private static async Task WaitUntilRabbitMQReady()
+        {
+            var success = false;
+            do
+            {
+                try
+                {
+                    using (var tcpClientB = new TcpClient())
+                    {
+                        await tcpClientB.ConnectAsync("orders.rabbitmq.nsb", 5672);
+                        success = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    await Task.Delay(2000);
+                }
+            } while (!success);
+        }
+
+        private static int orderNumber;
     }
 }

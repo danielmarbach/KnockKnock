@@ -16,23 +16,18 @@ namespace Orders.Backend
             Console.CancelKeyPress += CancelKeyPress;
             AppDomain.CurrentDomain.ProcessExit += ProcessExit;
 
-            bool success = false;
-            do
-            {
-                try
-                {
-                    using (var tcpClientB = new TcpClient())
-                    {
-                        await tcpClientB.ConnectAsync("orders.rabbitmq.nsb", 5672);
-                        success = true;
-                    }
-                }
-                catch (Exception)
-                {
-                    await Task.Delay(2000, tokenSource.Token);
-                }
-            } while (!success);
+            await WaitUntilRabbitMQReady();
+            var endpointConfiguration = CreateEndpoint();
 
+            var endpoint = await Endpoint.Start(endpointConfiguration);
+
+            await Task.WhenAny(semaphore.WaitAsync(), Task.Delay(TimeSpan.FromMinutes(1)));
+
+            await endpoint.Stop();
+        }
+
+        private static EndpointConfiguration CreateEndpoint()
+        {
             var defaultFactory = LogManager.Use<DefaultFactory>();
             defaultFactory.Level(LogLevel.Error);
 
@@ -48,21 +43,37 @@ namespace Orders.Backend
             persistence.ConnectionBuilder(
                 connectionBuilder: () =>
                 {
-                    return new SqlConnection(@"Server=orders.backend.db.nsb;Initial Catalog=master;User Id=sa;Password=Your_password123;");
+                    return new SqlConnection(
+                        @"Server=orders.backend.db.nsb;Initial Catalog=master;User Id=sa;Password=Your_password123;");
                 });
 
             var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             transport.ConnectionString("host=orders.rabbitmq.nsb;username=rabbitmq.nsb;password=rabbitmq.nsb");
             transport.UseConventionalRoutingTopology();
-
-            var endpoint = await Endpoint.Start(endpointConfiguration);
-
-            await semaphore.WaitAsync();
-
-            await endpoint.Stop();
+            return endpointConfiguration;
         }
 
-        static SemaphoreSlim semaphore = new SemaphoreSlim(0);
+        private static async Task WaitUntilRabbitMQReady()
+        {
+            var success = false;
+            do
+            {
+                try
+                {
+                    using (var tcpClientB = new TcpClient())
+                    {
+                        await tcpClientB.ConnectAsync("orders.rabbitmq.nsb", 5672);
+                        success = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    await Task.Delay(2000, tokenSource.Token);
+                }
+            } while (!success);
+        }
+
+        internal static SemaphoreSlim semaphore = new SemaphoreSlim(0);
         static CancellationTokenSource tokenSource = new CancellationTokenSource();
 
         static void CancelKeyPress(object sender, ConsoleCancelEventArgs e)

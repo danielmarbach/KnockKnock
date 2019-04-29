@@ -44,4 +44,4 @@ services:
       dockerfile: Orders.Frontend/Dockerfile
     depends_on:
       - "orders.rabbitmq.nsb"
-      - "orders.backend.db.nsb"
+      - "orders.backend.nsb"
