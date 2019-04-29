@@ -13,21 +13,7 @@ namespace Orders.Frontend
         {
             var httpClient = new HttpClient {BaseAddress = new Uri("http://orders.backend:8080/") };
 
-            bool success = false;
-            do
-            {
-                try
-                {
-                    var response = await httpClient.GetAsync("api/orders");
-                    success = response.IsSuccessStatusCode;
-                }
-                catch (HttpRequestException)
-                {
-                }
-            } while (!success);
-
-            Console.WriteLine("Ready");
-            Console.WriteLine();
+            await WaitUntilBackendReady(httpClient);
 
             var customerId = Guid.NewGuid();
 
@@ -36,10 +22,8 @@ namespace Orders.Frontend
                 NewOrder(customerId, httpClient), 
                 NewOrder(customerId, httpClient));
 
-            Console.WriteLine();
+            await Shutdown(httpClient);
         }
-
-        private static int orderNumber;
 
         private static async Task NewOrder(Guid customerId, HttpClient httpClient)
         {
@@ -59,5 +43,31 @@ namespace Orders.Frontend
             var returnedOrder = JsonConvert.DeserializeObject<Order>(await orderResponse.Content.ReadAsStringAsync());
             Console.WriteLine(returnedOrder.Total == order.Total ? $"Order #{currentOrderNumber}: No discount" : $"Order #{currentOrderNumber}: Got a discount of {order.Total - returnedOrder.Total}");
         }
+
+        private static async Task Shutdown(HttpClient httpClient)
+        {
+            await httpClient.DeleteAsync("api/orders");
+        }
+
+        private static async Task WaitUntilBackendReady(HttpClient httpClient)
+        {
+            var success = false;
+            do
+            {
+                try
+                {
+                    var response = await httpClient.GetAsync("api/orders");
+                    success = response.IsSuccessStatusCode;
+                }
+                catch (HttpRequestException)
+                {
+                }
+            } while (!success);
+
+            Console.WriteLine("Ready");
+            Console.WriteLine();
+        }
+
+        private static int orderNumber;
     }
 }

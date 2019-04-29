@@ -11,6 +11,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=PRODUCTION
     ports:
       - "8080:8080"
+    logging:
+        driver: none      
 
   orders.frontend:
     image: ${DOCKER_REGISTRY-}ordersfrontend
