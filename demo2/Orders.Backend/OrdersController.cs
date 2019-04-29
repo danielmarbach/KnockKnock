@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Orders.Backend
 {
@@ -6,6 +7,13 @@ namespace Orders.Backend
     [ApiController]
     public class OrdersController : ControllerBase
     {
+        private readonly IApplicationLifetime applicationLifetime;
+
+        public OrdersController(IApplicationLifetime applicationLifetime)
+        {
+            this.applicationLifetime = applicationLifetime;
+        }
+
         [HttpGet]
         public IActionResult Get()
         {
@@ -28,6 +36,13 @@ namespace Orders.Backend
             Database.Save(order);
 
             return Ok(order);
+        }
+
+        [HttpDelete]
+        public IActionResult Delete()
+        {
+            applicationLifetime.StopApplication();
+            return Ok();
         }
     }
 }
