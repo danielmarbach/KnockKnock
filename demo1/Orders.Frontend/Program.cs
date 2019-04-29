@@ -35,8 +35,7 @@ namespace Orders.Frontend
                 Total = 300,
             };
 
-            var id = order.CustomerId.ToString();
-            Console.WriteLine($"Order #{currentOrderNumber}: Value {order.Total} for customer {id.Substring(id.Length -7, 7)}");
+            Console.WriteLine($"Order #{currentOrderNumber}: Value {order.Total} for customer {order.CustomerId.Short()}");
             var orderResponse = await httpClient.PostAsync("api/orders",
                 new StringContent(JsonConvert.SerializeObject(order), Encoding.UTF8, "application/json"));
             orderResponse.EnsureSuccessStatusCode();
