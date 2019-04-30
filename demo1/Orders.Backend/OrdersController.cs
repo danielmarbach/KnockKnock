@@ -24,7 +24,9 @@ namespace Orders.Backend
         [HttpPost]
         public IActionResult Post([FromBody] Order order)
         {
-            var totalOfAllOrdersOfLastWeek = Database.LastWeekOrdersFor(order.CustomerId).Sum(o => o.Total);
+            var totalOfAllOrdersOfLastWeek = Database
+                .LastWeekOrdersFor(order.CustomerId)
+                .Sum(o => o.Total);
 
             var discount = 0m;
             if (totalOfAllOrdersOfLastWeek >= 500)

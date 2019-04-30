@@ -17,6 +17,12 @@ namespace Orders.Frontend
 
             var customerId = Guid.NewGuid();
 
+            await NewOrder(customerId, httpClient);
+
+            Console.WriteLine();
+            Console.WriteLine("Some time later...");
+            Console.WriteLine();
+
             await Task.WhenAll(
                 NewOrder(customerId, httpClient), 
                 NewOrder(customerId, httpClient), 
