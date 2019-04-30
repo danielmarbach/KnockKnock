@@ -9,3 +9,10 @@ Please read the [LICENSE](License) agreement
 The font used in the slides is
 
 [Kaffeesatz](https://www.yanone.de/fonts/kaffeesatz/)
+
+## Links
+
+## Giphy used
+
+- [CaptainObvious.gif](https://giphy.com/gifs/captainobvious-3ornkc6KUmmnEIQ7VS)
+- [CustomerService.gif](https://giphy.com/gifs/closing-customer-AFskrh7zcYgBa)
