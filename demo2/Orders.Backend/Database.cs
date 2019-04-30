@@ -34,5 +34,10 @@ namespace Orders.Backend
             var orders = ordersPerCustomer.GetOrAdd(order.CustomerId, new ConcurrentBag<Order>());
             orders.Add(order);
         }
+
+        public static void Save(Customer customer)
+        {
+            // no op cheating
+        }
     }
 }
