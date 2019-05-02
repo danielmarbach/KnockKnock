@@ -16,3 +16,8 @@ The font used in the slides is
 
 - [CaptainObvious.gif](https://giphy.com/gifs/captainobvious-3ornkc6KUmmnEIQ7VS)
 - [CustomerService.gif](https://giphy.com/gifs/closing-customer-AFskrh7zcYgBa)
+
+## Pictures used
+
+- https://pixabay.com/de/photos/intelligente-%C3%BCberwachung-apple-821557/
+- https://pixabay.com/de/illustrations/uhr-ziffernblatt-wellen-gegenwart-1527700/
