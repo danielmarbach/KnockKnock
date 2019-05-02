@@ -54,27 +54,9 @@ namespace Orders.Backend
             order.Total -= order.Total * discount;
             Database.Save(order);
 
-            BackgroundJob.Schedule(() => DecreaseRunningTotal(order.CustomerId, currentOrderTotal), Schedule.InAWeek);
+            BackgroundJob.Schedule(() => Schedule.DecreaseRunningTotal(order.CustomerId, currentOrderTotal), Schedule.InAWeek);
 
             return Ok(order);
-        }
-
-        [AutomaticRetry(Attempts = 10, DelaysInSeconds = new int[] { 0 })]
-        public static void DecreaseRunningTotal(Guid orderCustomerId, decimal amountToDecrease)
-        {
-            try
-            {
-                var currentRunningTotal = Database.GetRunningTotal(orderCustomerId);
-                currentRunningTotal.Total -= amountToDecrease;
-                Database.Save(currentRunningTotal);
-
-                Console.WriteLine($"Decreased running total of {orderCustomerId.Short()} by {amountToDecrease}");
-            }
-            catch (DBConcurrencyException)
-            {
-                Console.WriteLine($"--> Failed to decrease running total of {orderCustomerId.Short()} by {amountToDecrease}");
-                throw;
-            }
         }
     }
 }
