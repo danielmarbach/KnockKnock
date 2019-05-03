@@ -29,7 +29,9 @@ namespace Orders.Backend
         public Task Timeout(SubmitOrder state, IMessageHandlerContext context)
         {
             Data.RunningTotal -= state.Total;
+            #region
             Console.WriteLine($"Decreased running total of {state.CustomerId.Short()} by {state.Total}");
+            #endregion
             return Task.CompletedTask;
         }
 
