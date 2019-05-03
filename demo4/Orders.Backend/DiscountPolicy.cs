@@ -20,8 +20,12 @@ namespace Orders.Backend
                 discount = 0.1m;
             }
 
-            await context.SendLocal(new ProcessOrder { DiscountedTotal = message.Total - (message.Total * discount),
-                CustomerId = message.CustomerId, OrderNumber = message.OrderNumber, Total = message.Total, });
+            await context.SendLocal(new ProcessOrder { 
+                DiscountedTotal = message.Total - (message.Total * discount),
+                CustomerId = message.CustomerId, 
+                OrderNumber = message.OrderNumber, 
+                Total = message.Total, 
+            });
 
             await RequestTimeout(context, Schedule.InAWeek, message);
         }
