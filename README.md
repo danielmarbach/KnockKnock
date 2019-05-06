@@ -16,6 +16,8 @@ The font used in the slides is
 
 - [CaptainObvious.gif](https://giphy.com/gifs/captainobvious-3ornkc6KUmmnEIQ7VS)
 - [CustomerService.gif](https://giphy.com/gifs/closing-customer-AFskrh7zcYgBa)
+- [Roads.gif](https://giphy.com/gifs/michael-j-fox-SIc44h5b66MUw)
+- [Fire.gif](https://giphy.com/gifs/back-to-the-future-doc-brown-bttf-WRvjbSDp7ayrK)
 
 ## Pictures used
 
