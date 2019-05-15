@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Linq;
 
 namespace Orders.Backend
 {
-    public static class ScheduledJob 
+    public static class BatchJob 
     {
         public static void Run() 
         {

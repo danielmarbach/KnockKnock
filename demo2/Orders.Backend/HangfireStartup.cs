@@ -10,8 +10,8 @@ namespace Orders.Backend
     {
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            BackgroundJob.Schedule(() => ScheduledJob.Run(), TimeSpan.FromSeconds(10));
-            RecurringJob.AddOrUpdate(() => ScheduledJob.Run(), Cron.Minutely);
+            BackgroundJob.Schedule(() => BatchJob.Run(), TimeSpan.FromSeconds(10));
+            RecurringJob.AddOrUpdate(() => BatchJob.Run(), Cron.Minutely);
             return Task.CompletedTask;
         }
 
