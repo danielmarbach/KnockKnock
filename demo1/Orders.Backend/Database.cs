@@ -11,7 +11,7 @@ namespace Orders.Backend
         static Random random = new Random();
         static readonly ConcurrentDictionary<Guid, ConcurrentBag<Order>> ordersPerCustomer = new ConcurrentDictionary<Guid, ConcurrentBag<Order>>();
 
-        public static IEnumerable<Order> LastWeekOrdersFor(Guid customerId)
+        public static IEnumerable<Order> OrdersOfLastWeekFor(Guid customerId)
         {
             Thread.Sleep(random.Next(500, 1000));
             return ordersPerCustomer.GetOrAdd(customerId, new ConcurrentBag<Order>());

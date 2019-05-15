@@ -25,7 +25,7 @@ namespace Orders.Backend
         public IActionResult Post([FromBody] Order order)
         {
             var totalOfAllOrdersOfLastWeek = Database
-                .LastWeekOrdersFor(order.CustomerId)
+                .OrdersOfLastWeekFor(order.CustomerId)
                 .Sum(o => o.Total);
 
             var discount = 0m;

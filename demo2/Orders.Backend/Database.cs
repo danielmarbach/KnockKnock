@@ -23,7 +23,7 @@ namespace Orders.Backend
             return customers.Values;
         }
 
-        public static IEnumerable<Order> LastWeekOrdersFor(Guid customerId)
+        public static IEnumerable<Order> OrdersOfLastWeekFor(Guid customerId)
         {
             customers.TryAdd(customerId, new Customer());
             return ordersPerCustomer.GetOrAdd(customerId, new ConcurrentBag<Order>());

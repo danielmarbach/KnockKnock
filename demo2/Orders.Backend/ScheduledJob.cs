@@ -13,7 +13,7 @@ namespace Orders.Backend
             foreach (var customer in Database.GetCustomers())
             {
                 var totalOfAllOrdersOfLastWeek = Database
-                    .LastWeekOrdersFor(customer.CustomerId)
+                    .OrdersOfLastWeekFor(customer.CustomerId)
                     .Sum(o => o.Total);
 
                 if (totalOfAllOrdersOfLastWeek >= 500)
