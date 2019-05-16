@@ -12,6 +12,9 @@ The font used in the slides is
 
 ## Links
 
+- [RabbitMQ Delayed Delivery](https://docs.particular.net/transports/rabbitmq/delayed-delivery)
+- [AmazonSQS Delayed Delivery](https://docs.particular.net/transports/sqs/delayed-delivery)
+
 ## Giphy used
 
 - [CaptainObvious.gif](https://giphy.com/gifs/captainobvious-3ornkc6KUmmnEIQ7VS)
