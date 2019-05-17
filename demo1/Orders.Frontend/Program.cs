@@ -26,13 +26,16 @@ namespace Orders.Frontend
             await Task.WhenAll(
                 NewOrder(customerId, httpClient), 
                 NewOrder(customerId, httpClient), 
+                NewOrder(customerId, httpClient, 750),
                 NewOrder(customerId, httpClient));
 
             await Shutdown(httpClient);
         }
 
-        private static async Task NewOrder(Guid customerId, HttpClient httpClient)
+        private static async Task NewOrder(Guid customerId, HttpClient httpClient, int delay = 0)
         {
+            await Task.Delay(delay);
+
             var currentOrderNumber = Interlocked.Increment(ref orderNumber);
 
             var order = new Order
