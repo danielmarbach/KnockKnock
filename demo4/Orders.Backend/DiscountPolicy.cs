@@ -12,10 +12,11 @@ namespace Orders.Backend
         public async Task Handle(SubmitOrder message, IMessageHandlerContext context)
         {
             Data.CustomerId = message.CustomerId;
+            var totalOfAllOrdersOfLastWeek = Data.RunningTotal;
             Data.RunningTotal += message.Total;
 
             var discount = 0m;
-            if (Data.RunningTotal >= 500)
+            if (totalOfAllOrdersOfLastWeek >= 500)
             {
                 discount = 0.1m;
             }

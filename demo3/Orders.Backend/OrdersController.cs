@@ -41,12 +41,13 @@ namespace Orders.Backend
         public IActionResult Post([FromBody] Order order)
         {
             var currentRunningTotal = Database.GetRunningTotal(order.CustomerId);
+            var totalOfAllOrdersOfLastWeek = currentRunningTotal.Total;
             var currentOrderTotal = order.Total;
             currentRunningTotal.Total += currentOrderTotal;
             Database.Save(currentRunningTotal);
 
             var discount = 0m;
-            if (currentRunningTotal.Total >= 500)
+            if (totalOfAllOrdersOfLastWeek >= 500)
             {
                 discount = 0.1m;
             }
