@@ -13,12 +13,12 @@ namespace Orders.Backend
 
         public static IEnumerable<Order> OrdersOfLastWeekFor(Guid customerId)
         {
-            Thread.Sleep(random.Next(500, 1000));
             return ordersPerCustomer.GetOrAdd(customerId, new ConcurrentBag<Order>());
         }
 
         public static void Save(Order order)
         {
+            Thread.Sleep(random.Next(500, 1000));
             var orders = ordersPerCustomer.GetOrAdd(order.CustomerId, new ConcurrentBag<Order>());
             orders.Add(order);
         }
